@@ -14,7 +14,7 @@ namespace CustomerDatalayer.Repositories
     {
         public void Create(Customers entity)
         {
-            using var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=CustomerDB_Kalenishin;Trusted_Connection=True;");
+            using var connection = new SqlConnection("Server=.//SQLEXPRESS;Database=CustomerDB_Kalenishin;Trusted_Connection=True;");
             connection.Open();
             var command = new SqlCommand(
                 "INSERT INTO Customers(FirstName, LastName, PhoneNumber, Email, TotalPurchasesAmount)" +
@@ -109,7 +109,7 @@ namespace CustomerDatalayer.Repositories
         }
 
 
-        public int GetID()
+        public int GetCustomerId()
         {
             using var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=CustomerDB_Kalenishin;Trusted_Connection=True;");
             connection.Open();
