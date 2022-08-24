@@ -156,7 +156,7 @@ namespace CustomerDatalayer.Repositories
         }
 
 
-        public int GetCustomerID()
+        public int GetCustomerId()
         {
             using var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=CustomerDB_Kalenishin;Trusted_Connection=True;");
             connection.Open();
@@ -171,7 +171,7 @@ namespace CustomerDatalayer.Repositories
         }
 
 
-        public int GetID()
+        public int GetAddressId()
         {
             using var connection = new SqlConnection("Server=.\\SQLEXPRESS;Database=CustomerDB_Kalenishin;Trusted_Connection=True;");
             connection.Open();

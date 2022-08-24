@@ -18,7 +18,7 @@ namespace CustomerDatalayer.Integration.Tests
             var repository = new AddressRepository();
             var address = new Addresses()
             {
-                CustomerId = repository.GetCustomerID(),
+                CustomerId = repository.GetCustomerId(),
                 AddressLine1 = "Mulholland Drive",
                 AddressLine2 = "13/1",
                 AddressType = "Shipping",
