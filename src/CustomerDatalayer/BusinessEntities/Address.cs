@@ -24,7 +24,6 @@ namespace CustomerDatalayer.BusinessEntities
                 AddressType = (AddrTypes)Enum.Parse(typeof(AddrTypes), value, true);
             }
         }
-
         public AddrTypes AddressType { get; set; }
         public string City { get; set; } = string.Empty;
         public string PostalCode { get; set; } = string.Empty;
