@@ -1,5 +1,7 @@
 using CustomerDatalayer.BusinessEntities;
 using CustomerDatalayer.Repositories;
+using System.Net;
+using Xunit;
 
 namespace CustomerDatalayer.Integration.Tests
 {
@@ -18,93 +20,136 @@ namespace CustomerDatalayer.Integration.Tests
         [Fact]
         public void ShouldBeAbleToCreateAddress()
         {
-            var repository = new AddressRepository();
-            var address = new Addresses()
-            {
-                CustomerId = repository.GetCustomerId(),
-                AddressLine1 = "Mulholland Drive",
-                AddressLine2 = "13/1",
-                AddressType = "Shipping",
-                City = "Los Angeles",
-                PostalCode = "90012",
-                AddrState = "California",
-                Country = "USA"
-            };
-            repository.Create(address); 
+            var address = Fixture.CreateMockAddress();
+            Assert.Equal("Mulholland Drive", address.AddressLine1);
+            Assert.Equal("13/1", address.AddressLine2);
+            Assert.Equal("Billing", address.AddressTypeAsString);
+            Assert.Equal("Los Angeles", address.City);
+            Assert.Equal("90012", address.PostalCode);
+            Assert.Equal("Washington", address.AddrState);
+            Assert.Equal("USA", address.Country);
         }
 
 
         [Fact]
         public void ShouldBeAbleToReadAddress()
         {
+            Fixture.CreateMockAddress();
             var repository = Fixture.CreateAddressRepository();
-            Assert.NotNull(repository.Read(repository.GetAddressId()));
+            Assert.NotNull(repository.Read(repository.GetId()));
+        }
+
+
+        [Fact]
+        public void ShouldBeAbleToReturnNullWhenReadAddressWithNullId()
+        {
+            Fixture.CreateMockAddress();
+            var repository = Fixture.CreateAddressRepository();
+            Assert.Null(repository.Read(0));
         }
 
 
         [Fact]
         public void ShouldBeAbleToUpdateAddress()
         {
+            Fixture.CreateMockAddress();
             var repository = Fixture.CreateAddressRepository();
-            var addresses = new Addresses()
-            {
-                AddressId = repository.GetAddressId(),
-                CustomerId = repository.GetCustomerId(),
-                AddressLine1 = "AddressLine1",
-                AddressLine2 = "AddressLine2",
-                AddressType = "Billing",
-                City = "Ostin",
-                PostalCode = "77777",
-                AddrState = "Texas",
-                Country = "USA"
-            };
-            repository.Update(addresses);
+            var lastAddedAddressId = repository.GetId();
+            var lastAddedAddress = repository.Read(lastAddedAddressId);
+            lastAddedAddress.Country = "Canada";
+            repository.Update(lastAddedAddress);
+            Assert.Equal("Canada", repository.Read(lastAddedAddressId).Country);
         }
 
 
         [Fact]
         public void ShouldBeAbleToDeleteAddress()
         {
-            Fixture.DeleteAll();
+            Fixture.CreateMockAddress();
             var repository = Fixture.CreateAddressRepository();
+            var lastAddedAddressId = repository.GetId();
+            repository.Delete(lastAddedAddressId);
+            Assert.Null(repository.Read(lastAddedAddressId));
 
-            repository.Delete(1);
         }
 
-    }
 
-
-    public class AddressRepositoryFixture
-    {
-        public void DeleteAll()
+        [Fact]
+        public void ShouldBeAbleToGetAllCustomers()
         {
-            var repository = new AddressRepository();
-            repository.DeleteAll();
-        }
-
-        public Addresses CreateMockAddress()
-        {
-            var address = new Addresses()
+            var repository = Fixture.CreateAddressRepository();
+            Fixture.DeleteAll();
+            Fixture.CreateMockAddress();
+            Fixture.CreateMockAddress();
+            Fixture.CreateMockAddress();
+            var allAddresses = repository.GetAll();
+            foreach (Address address in allAddresses)
             {
-                CustomerId = 4,
-                AddressLine1 = "AddressLine1",
-                AddressLine2 = "AddressLine2",
-                AddressType = "Billing",
-                City = "Ostin",
-                PostalCode = "77777",
-                AddrState = "Texas",
-                Country = "USA"
-            };
-            var addressRepository = new AddressRepository();
-            addressRepository.Create(address);
-            return address;
+                Assert.Equal("13/1", address.AddressLine2);
+            }
         }
 
-        public AddressRepository CreateAddressRepository()
+
+        [Fact]
+        public void ShouldBeAbleToDeleteAllAddresses()
         {
-            return new AddressRepository();
+            var repository = Fixture.CreateAddressRepository();
+            int lastAddedAddressId = repository.GetId();
+            repository.DeleteAll();
+            Assert.Null(repository.Read(lastAddedAddressId));
         }
-    }
 
+
+
+
+        public class AddressRepositoryFixture
+        {
+            public void DeleteAll()
+            {
+                var repository = new AddressRepository();
+                repository.DeleteAll();
+            }
+
+            public Address CreateMockAddress()
+            {
+                var repository = new CustomerRepository();
+                Customer customer = new Customer
+                {
+                    FirstName = "Maria",
+                    LastName = "Waynenen",
+                    PhoneNumber = "123456789444444",
+                    Email = "mariaWaynenen@gmail.com",
+                    TotalPurchasesAmount = 10
+                };
+                repository.Create(customer);
+
+
+                var addressRepository = this.CreateAddressRepository();
+                Address address = new Address
+                {
+                    CustomerId = addressRepository.GetCustomerId(),
+                    AddressLine1 = "Mulholland Drive",
+                    AddressLine2 = "13/1",
+                    AddressType = AddrTypes.Billing,
+                    City = "Los Angeles",
+                    PostalCode = "90012",
+                    AddrState = "Washington",
+                    Country = "USA"
+                };
+                addressRepository.Create(address);
+
+                return address;
+            }
+
+            public AddressRepository CreateAddressRepository()
+            {
+                return new AddressRepository();
+            }
+
+        }
+
+
+
+    }
 
 }
